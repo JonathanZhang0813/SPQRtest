@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SPQR · 五维人格测试</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #eee;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sub {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .full-name {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 6px;
+            font-family: monospace;
+        }
+
+        /* 卡片 */
+        .card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 28px;
+            padding: 24px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.2s;
+        }
+
+        .question {
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+        }
+
+        .question:last-child {
+            border-bottom: none;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .opt-btn {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 16px;
+            border-radius: 60px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+            color: #ddd;
+        }
+
+        .opt-btn.selected {
+            background: #f12711;
+            border-color: #f5af19;
+            color: white;
+            box-shadow: 0 0 12px rgba(241,39,17,0.4);
+        }
+
+        .opt-btn:hover:not(.selected) {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* 按钮 */
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #2c3e66;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            color: white;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .btn-reset {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* 结果页 */
+        .result-card {
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f12711;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .type-code {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+
+        .title-name {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 15px 0;
+            text-shadow: 0 0 10px rgba(245,175,25,0.3);
+        }
+
+        .comment {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 24px;
+            margin: 20px 0;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .analysis {
+            text-align: left;
+            background: rgba(255,255,255,0.05);
+            padding: 18px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #ccc;
+            border-left: 3px solid #f5af19;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 550px) {
+            .options {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .opt-btn {
+                width: 100%;
+            }
+            .title-name {
+                font-size: 1.8rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- 标题区 -->
+    <div class="header">
+        <h1><span>SPQR</span></h1>
+        <div class="sub">恶搞 · 但认真 · 有心理依据</div>
+        <div class="full-name">Self-Perception Quintet Report · 五维自我认知报告</div>
+        <div class="sub" style="font-size:0.7rem; margin-top:8px;">Quiet/Noisy · Stupid/Wise · Random/Orderly · Brave/Afraid · True/Mask</div>
+    </div>
+
+    <!-- 问卷区 -->
+    <div id="quizPanel">
+        <!-- 动态生成题目 -->
+    </div>
+
+    <!-- 结果区 -->
+    <div id="resultPanel" class="card result-card hidden">
+        <!-- 动态填充结果 -->
+    </div>
+
+    <footer>⚡ 每个维度3题 | 选更符合你的那一项 | SPQR © 五维人格模型</footer>
+</div>
+
+<script>
+    // ======================= 题目定义 =======================
+    // 维度顺序: Q/N, S/W, R/O, B/A, T/M
+    const questions = [
+        // 维度1: Quiet / Noisy (3题)
+        { text: "在聚会或团队讨论中，你通常是：", options: ["安静听完，最后才发言", "第一个开口，音量不自觉变大"], dimIdx: 0, sideA: "Q", sideB: "N" },
+        { text: "你更喜欢哪种休息方式？", options: ["一个人待着 / 戴上耳机", "约朋友出来 / 热闹氛围"], dimIdx: 0, sideA: "Q", sideB: "N" },
+        { text: "朋友更可能用哪个词形容你？", options: ["安静、内敛", "热闹、有存在感"], dimIdx: 0, sideA: "Q", sideB: "N" },
+        // 维度2: Stupid / Wise (行动vs反思)
+        { text: "遇到一个陌生问题时，你更倾向于：", options: ["先动手试试，错了再改", "先查资料，想清楚再动"], dimIdx: 1, sideA: "S", sideB: "W" },
+        { text: "别人说你“想得太少”的频率：", options: ["经常听到", "很少听到"], dimIdx: 1, sideA: "S", sideB: "W" },
+        { text: "你的决策风格更接近：", options: ["快速试错", "深思熟虑"], dimIdx: 1, sideA: "S", sideB: "W" },
+        // 维度3: Random / Orderly
+        { text: "你的桌面/房间通常是：", options: ["混乱但我知道东西在哪", "整齐，每样东西有固定位置"], dimIdx: 2, sideA: "R", sideB: "O" },
+        { text: "你更喜欢哪种工作方式？", options: ["同时做几件事，看心情切换", "专注做完一件再做下一件"], dimIdx: 2, sideA: "R", sideB: "O" },
+        { text: "对于计划这件事：", options: ["计划赶不上变化，懒得做", "没有计划会让我焦虑"], dimIdx: 2, sideA: "R", sideB: "O" },
+        // 维度4: Brave / Afraid
+        { text: "面对不确定但可能有高回报的机会（如裸辞、大胆表白）：", options: ["会试一试", "会退缩 / 反复计算风险"], dimIdx: 3, sideA: "B", sideB: "A" },
+        { text: "当和别人意见冲突时：", options: ["敢于直接表达", "倾向于回避或附和"], dimIdx: 3, sideA: "B", sideB: "A" },
+        { text: "你更认同哪句话？", options: ["后悔做过什么，比后悔没做要好", "安全第一"], dimIdx: 3, sideA: "B", sideB: "A" },
+        // 维度5: True / Mask (自我真实 vs 面具)
+        { text: "你在社交媒体上的样子和真实的你：", options: ["差不多，懒得演", "差别很大，那是理想版本"], dimIdx: 4, sideA: "T", sideB: "M" },
+        { text: "在不同人群面前（家人/同事/网友），你的表现：", options: ["基本一致", "像变了一个人，有时切换很累"], dimIdx: 4, sideA: "T", sideB: "M" },
+        { text: "面对自己“阴暗面”（嫉妒、懒惰、自私）：", options: ["承认并接受", "不愿面对或习惯性掩饰"], dimIdx: 4, sideA: "T", sideB: "M" }
+    ];
+
+    // 存储每个维度的得分 (B侧计数)
+    let scores = [0, 0, 0, 0, 0];
+    // 存储每道题的选中状态 (0=未选, 1=A, 2=B)
+    let answers = new Array(questions.length).fill(0);
+
+    // ======================= 32种类型的数据库 =======================
+    const typeData = {
+        "QSRBT": { title: "地雷", comment: "安静、冲动、混乱、勇敢、真实。看着没事，踩到就炸，炸完自己先懵。", analysis: "高行为激活但低外向性。内心冲动强烈，但不善于用语言表达。情绪积累后爆发力惊人，属于‘沉默的火山型’。在安全环境中创造力极强。" },
+        "QSRBM": { title: "戏精", comment: "安静、冲动、混乱、勇敢、戴面具。外表人畜无害，内心全是剧本。", analysis: "低自我监控+高冲动，但善于用安静的外表演示无辜。实际上行动力很强，只是不让别人看透。适合需要‘扮猪吃老虎’的场景。" },
+        "QSRAT": { title: "咸鱼", comment: "安静、冲动、混乱、怂、真实。想搞事但不敢，想整理但懒得，躺平不装。", analysis: "高行为抑制+低尽责性。焦虑水平高但执行力低，不过对自己诚实。是‘清醒的躺平主义者’，不内耗于伪装。" },
+        "QSRAM": { title: "兔子", comment: "安静、冲动、混乱、怂、面具。表面镇定，内心疯狂逃跑。", analysis: "高自我欺骗+高焦虑。用‘我很好’的面具掩盖恐惧，实际容易受惊。习惯性回避冲突，但私下情绪波动大。" },
+        "QSOBT": { title: "锤子", comment: "安静、冲动、有序、勇敢、真实。有计划地做蠢事，且不后悔。", analysis: "高尽责性+高行动导向。执行力极强，虽然方向偶尔离谱，但从不拖泥带水。适合需要快速落地的岗位。" },
+        "QSOBM": { title: "裁缝", comment: "安静、冲动、有序、勇敢、面具。把疯狂裁剪成得体的样子。", analysis: "用秩序管理冲动，用面具包装真实。是‘高功能的混乱者’，表面井井有条，内心随时准备掀桌。" },
+        "QSOAT": { title: "乌龟", comment: "安静、冲动、有序、怂、真实。计划周全，一步不走。", analysis: "低自我欺骗+高规避。诚实的懦夫，用详细的计划代替行动，但至少不骗自己。适合做参谋长而非将军。" },
+        "QSOAM": { title: "瓷瓶", comment: "安静、冲动、有序、怂、面具。看起来很稳，一碰就碎。", analysis: "高自我欺骗+高完美主义。维持‘井井有条’的人设消耗巨大，实际心理韧性很低。需要学会接受失控。" },
+        "QWRBT": { title: "赌徒", comment: "安静、聪明、混乱、勇敢、真实。想清楚了再all in，输了认。", analysis: "高反思+高冒险。理性评估后敢于下注，且愿赌服输。是‘冷静的冒险家’，在不确定性中表现优异。" },
+        "QWRBM": { title: "棋手", comment: "安静、聪明、混乱、勇敢、面具。表面不动，背后全算好了。", analysis: "高自我监控+高策略性。面具是武器，每一步都是计算。适合博弈、谈判、暗中布局的角色。" },
+        "QWRAT": { title: "囚徒", comment: "安静、聪明、混乱、怂、真实。知道该怎么做，但不敢。", analysis: "高认知被高焦虑锁死。清醒地困在自己的恐惧里，是最痛苦的一种组合。需要外部推力打破循环。" },
+        "QWRAM": { title: "冰山", comment: "安静、聪明、混乱、怂、面具。上面冷静，下面全是暗涌。", analysis: "用高智商和高面具掩盖焦虑。看起来从容，内心每天都在风暴。容易得‘高功能焦虑症’。" },
+        "QWOBT": { title: "将军", comment: "安静、聪明、有序、勇敢、真实。计划周密，执行果断，不声张。", analysis: "高尽责性+高反思+低外向。隐形的控制者，团队中最可靠但最低调的人。适合做COO或总参谋长。" },
+        "QWOBM": { title: "间谍", comment: "安静、聪明、有序、勇敢、面具。看起来岁月静好，其实步步为营。", analysis: "面具作为工具，用‘好人’形象实现野心。是最高段位的伪装者，通常出现在权力游戏里。" },
+        "QWOAT": { title: "隐士", comment: "安静、聪明、有序、怂、真实。什么都想清楚了，然后什么都没做。", analysis: "分析瘫痪的典型。高认知+高尽责性+高焦虑，完美主义的囚徒。需要接受‘不完美地行动’。" },
+        "QWOAM": { title: "蜡像", comment: "安静、聪明、有序、怂、面具。完美的假人，内里全是裂痕。", analysis: "高自我欺骗+高完美主义。维持‘完美人设’的代价是真实的自我逐渐萎缩。最容易burnout的类型。" },
+        "NSRBT": { title: "野火", comment: "吵闹、冲动、混乱、勇敢、真实。烧完就跑，从不复盘。", analysis: "高外向+高冲动+低自我监控。无法被忽视的存在，破坏力和创造力一样强。适合创业初期或创意岗位。" },
+        "NSRBM": { title: "狐狸", comment: "吵闹、冲动、混乱、勇敢、面具。又吵又乱又敢又装，天生销售。", analysis: "高自我监控+高外向。用魅力掩盖混乱，用话术达成目的。适合销售、公关、直播带货。" },
+        "NSRAT": { title: "喇叭", comment: "吵闹、冲动、混乱、怂、真实。声音很大，胆子很小。", analysis: "高外向但高焦虑。用吵闹掩饰恐惧，是‘虚张声势的怂包’。容易在压力下暴露脆弱。" },
+        "NSRAM": { title: "孔雀", comment: "吵闹、冲动、混乱、怂、面具。看起来在搞事，其实在求救。", analysis: "面具作为防御。用夸张的表演吸引关注，掩盖内心的不安。需要学会直接表达需求。" },
+        "NSOBT": { title: "机器", comment: "吵闹、冲动、有序、勇敢、真实。做事有章法，但做的事全是馊主意。", analysis: "高尽责性+低反思。效率高的错误执行者，执行力极强但方向可能南辕北辙。需要搭配一个智者。" },
+        "NSOBM": { title: "政客", comment: "吵闹、冲动、有序、勇敢、面具。话多、整洁、虚伪、上进。", analysis: "高自我监控+高尽责性+高外向。用秩序和表演换取权力，是典型的‘体制内精英’。" },
+        "NSOAT": { title: "纸虎", comment: "吵闹、冲动、有序、怂、真实。看起来很虎，一戳就破。", analysis: "高外向+高焦虑。用高调的行为掩盖内心的恐惧，但纸包不住火。容易在关键时刻掉链子。" },
+        "NSOAM": { title: "演员", comment: "吵闹、冲动、有序、怂、面具。开会最积极，干活最怂，表演最卖力。", analysis: "面具作为生存策略。用表现换取安全，是‘职场老油条’的原型。能力不一定强，但存在感一定强。" },
+        "NWRBT": { title: "天才", comment: "吵闹、聪明、混乱、勇敢、真实。又吵又聪明又敢，让人又爱又恨。", analysis: "高外向+高认知+高冒险。魅力型颠覆者，天生的意见领袖。缺点是容易burnout和得罪人。" },
+        "NWRBM": { title: "黑客", comment: "吵闹、聪明、混乱、勇敢、面具。精准控制每一句话、每一个表情。", analysis: "高自我监控作为超能力。社交中的顶级玩家，擅长用语言和信息差操控局面。" },
+        "NWRAT": { title: "键盘", comment: "吵闹、聪明、混乱、怂、真实。网上战神，线下怂包。", analysis: "高认知+高焦虑+高外向（仅限线上）。典型的‘键盘侠’心理模型，需要把勇气从线上搬到线下。" },
+        "NWRAM": { title: "主播", comment: "吵闹、聪明、混乱、怂、面具。话说得很漂亮，内心全是不安。", analysis: "用语言表演掩盖焦虑。高功能焦虑症的高发人群，擅长取悦他人但自我价值感脆弱。" },
+        "NWOBT": { title: "领袖", comment: "吵闹、聪明、有序、勇敢、真实。吵、聪明、有序、敢——天生的老板。", analysis: "高外向+高尽责性+高认知+高冒险。最稀缺的配置，天生的CEO或政治家。缺点是容易自负。" },
+        "NWOBM": { title: "面具", comment: "吵闹、聪明、有序、勇敢、面具。完美到不像真人，每一面都是演的。", analysis: "全维度高自我监控。面具即本体，已经分不清哪个是真实的自己。成就极高，但存在感危机也极深。" },
+        "NWOAT": { title: "鹦鹉", comment: "吵闹、聪明、有序、怂、真实。知道一切，不敢做任何事，但至少诚实。", analysis: "高认知被高焦虑锁死，但保持真实。是‘悲剧英雄’，值得尊敬但难以成功。" },
+        "NWOAM": { title: "空壳", comment: "吵闹、聪明、有序、怂、面具。看起来什么都有，内里什么都没有。", analysis: "全维度防御。面具厚到忘了自己是谁，外表光鲜，内心空洞。最容易出现‘空心症’的类型。" }
+    };
+
+    function getTypeKey(letters) {
+        return letters.join("");
+    }
+
+    function computeLetters() {
+        return [
+            scores[0] >= 2 ? "N" : "Q",
+            scores[1] >= 2 ? "W" : "S",
+            scores[2] >= 2 ? "O" : "R",
+            scores[3] >= 2 ? "A" : "B",
+            scores[4] >= 2 ? "M" : "T"
+        ];
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById("quizPanel");
+        if (!container) return;
+        let html = `<div class="card">`;
+        questions.forEach((q, idx) => {
+            const selectedVal = answers[idx];
+            html += `
+                <div class="question" data-qidx="${idx}">
+                    <div class="q-text">${idx+1}. ${q.text}</div>
+                    <div class="options">
+                        <div class="opt-btn ${selectedVal === 1 ? 'selected' : ''}" data-opt="A">🔘 ${q.options[0]}</div>
+                        <div class="opt-btn ${selectedVal === 2 ? 'selected' : ''}" data-opt="B">🔘 ${q.options[1]}</div>
+                    </div>
+                </div>
+            `;
+        });
+        html += `
+            <div class="btn-group">
+                <button class="btn btn-primary" id="submitBtn">✨ 查看我的SPQR人格 ✨</button>
+                <button class="btn btn-reset" id="resetBtn">🔄 重新测试</button>
+            </div>
+        </div>`;
+        container.innerHTML = html;
+
+        document.querySelectorAll('.question').forEach(qDiv => {
+            const qidx = parseInt(qDiv.dataset.qidx);
+            const btns = qDiv.querySelectorAll('.opt-btn');
+            btns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const opt = btn.dataset.opt;
+                    const newVal = opt === "A" ? 1 : 2;
+                    answers[qidx] = newVal;
+                    btns.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    updateScoresFromAnswers();
+                });
+            });
+        });
+
+        document.getElementById("submitBtn")?.addEventListener("click", showResult);
+        document.getElementById("resetBtn")?.addEventListener("click", resetTest);
+    }
+
+    function updateScoresFromAnswers() {
+        scores = [0, 0, 0, 0, 0];
+        for (let i = 0; i < questions.length; i++) {
+            const ans = answers[i];
+            if (ans === 2) {
+                const dim = questions[i].dimIdx;
+                scores[dim]++;
+            }
+        }
+    }
+
+    function showResult() {
+        if (answers.some(a => a === 0)) {
+            alert("⚠️ 还有题目没选完！每道题都要选一个选项～");
+            return;
+        }
+        updateScoresFromAnswers();
+        const letters = computeLetters();
+        const typeKey = getTypeKey(letters);
+        const data = typeData[typeKey];
+        
+        if (!data) {
+            document.getElementById("resultPanel").innerHTML = `<div style="text-align:center"><h3>🤔 SPQR稀有类型</h3><p>${typeKey}</p><p>系统正在加载...</p></div>`;
+            document.getElementById("quizPanel").classList.add("hidden");
+            document.getElementById("resultPanel").classList.remove("hidden");
+            return;
+        }
+        
+        const resultHtml = `
+            <div class="result-card">
+                <div class="badge">🏛️ SPQR · 五维代码</div>
+                <div class="type-code">${typeKey}</div>
+                <div class="title-name">✨ ${data.title} ✨</div>
+                <div class="comment">
+                    📢 ${data.comment}
+                </div>
+                <div class="analysis">
+                    🧠 心理分析：<br><br>
+                    ${data.analysis}
+                </div>
+                <div class="btn-group" style="margin-top: 28px;">
+                    <button class="btn btn-reset" id="restartBtn">🔄 重新测试</button>
+                </div>
+            </div>
+        `;
+        document.getElementById("resultPanel").innerHTML = resultHtml;
+        document.getElementById("quizPanel").classList.add("hidden");
+        document.getElementById("resultPanel").classList.remove("hidden");
+        
+        document.getElementById("restartBtn")?.addEventListener("click", resetTest);
+    }
+    
+    function resetTest() {
+        answers = new Array(questions.length).fill(0);
+        scores = [0, 0, 0, 0, 0];
+        document.getElementById("quizPanel").classList.remove("hidden");
+        document.getElementById("resultPanel").classList.add("hidden");
+        renderQuestions();
+    }
+
+    renderQuestions();
+</script>
+</body>
+</html>
