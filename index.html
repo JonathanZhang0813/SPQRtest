@@ -246,7 +246,6 @@
             border-left: 3px solid #f5af19;
         }
 
-        /* 百分比仪表盘 */
         .metrics {
             background: rgba(0,0,0,0.3);
             border-radius: 20px;
@@ -286,7 +285,6 @@
             transition: width 0.5s ease;
         }
 
-        /* 推荐模块 */
         .also-box {
             background: rgba(245,175,25,0.1);
             border: 1px solid rgba(245,175,25,0.3);
@@ -452,7 +450,6 @@
         "NWOAM": { title: "空壳", comment: "吵闹、聪明、有序、怂、面具。看起来什么都有，内里什么都没有。", analysis: "全维度防御。面具厚到忘了自己是谁，外表光鲜，内心空洞。最容易出现‘空心症’的类型。" }
     };
 
-    // 维度名称和左右标签
     const dimLabels = [
         { name: "Quiet / Noisy", left: "🔇 Quiet", right: "📢 Noisy" },
         { name: "Stupid / Wise", left: "🤪 Stupid", right: "🧠 Wise" },
@@ -487,36 +484,45 @@
         ];
     }
 
-    // 计算每个维度的百分比 (0-100, 0=全左, 100=全右)
     function computePercentages() {
         return scores.map(score => (score / 8) * 100);
     }
 
-    // 根据得分找最接近的其他类型（汉明距离 + 得分差）
-    function findSimilarTypes(letters, percentages) {
-        const allTypes = Object.keys(typeData);
-        const currentKey = letters.join("");
-        
-        // 计算每个候选的相似度得分
-        const scored = allTypes.filter(t => t !== currentKey).map(candidate => {
-            const candidateLetters = candidate.split("");
-            // 汉明距离（不同字母的数量）
-            let hamming = 0;
-            for (let i = 0; i < 5; i++) {
-                if (candidateLetters[i] !== letters[i]) hamming++;
-            }
-            // 得分越高越接近（汉明距离越小越好）
-            const similarity = (5 - hamming) / 5;
-            return { type: candidate, similarity, hamming };
-        });
-        
-        // 按汉明距离排序，取前3
-        scored.sort((a, b) => a.hamming - b.hamming);
-        return scored.slice(0, 3).map(s => s.type);
+    // ======================= 加权推荐算法（欧几里得距离）=======================
+    // 根据类型字母，返回该类型的理想百分比数组（0%或100%）
+    function getIdealPercentages(typeCode) {
+        const letters = typeCode.split("");
+        const ideal = [];
+        for (let i = 0; i < 5; i++) {
+            // 右侧字母（N/W/O/A/M）代表100%，左侧代表0%
+            const isRight = (letters[i] === 'N' || letters[i] === 'W' || letters[i] === 'O' || letters[i] === 'A' || letters[i] === 'M');
+            ideal.push(isRight ? 100 : 0);
+        }
+        return ideal;
     }
 
-    function getTypeKey(letters) {
-        return letters.join("");
+    // 计算欧几里得距离（基于百分比）
+    function euclideanDistance(actualPcts, idealPcts) {
+        let sumSq = 0;
+        for (let i = 0; i < 5; i++) {
+            const diff = actualPcts[i] - idealPcts[i];
+            sumSq += diff * diff;
+        }
+        return Math.sqrt(sumSq);
+    }
+
+    function findSimilarTypesWeighted(actualPcts, currentType) {
+        const allTypes = Object.keys(typeData);
+        const candidates = allTypes.filter(t => t !== currentType);
+        
+        const withDistance = candidates.map(candidate => {
+            const idealPcts = getIdealPercentages(candidate);
+            const distance = euclideanDistance(actualPcts, idealPcts);
+            return { type: candidate, distance };
+        });
+        
+        withDistance.sort((a, b) => a.distance - b.distance);
+        return withDistance.slice(0, 3).map(item => item.type);
     }
 
     function renderQuestions() {
@@ -597,13 +603,18 @@
         }
         metricsHtml += `</div>`;
         
-        // 查找相似类型
-        const similarTypes = findSimilarTypes(letters, percentages);
+        // 使用加权算法查找相似类型
+        const similarTypes = findSimilarTypesWeighted(percentages, typeKey);
         let alsoHtml = `<div class="also-box"><div class="also-title">🔍 你也有可能是：</div>`;
         for (const t of similarTypes) {
             const similarData = typeData[t];
             if (similarData) {
-                alsoHtml += `<div class="also-item"><strong>${t}</strong> · ${similarData.title}</div>`;
+                // 计算距离并显示匹配度
+                const idealPcts = getIdealPercentages(t);
+                const distance = euclideanDistance(percentages, idealPcts);
+                const maxPossibleDistance = Math.sqrt(5 * 100 * 100); // 约223.6
+                const similarity = Math.max(0, Math.min(100, Math.round((1 - distance / maxPossibleDistance) * 100)));
+                alsoHtml += `<div class="also-item"><strong>${t}</strong> · ${similarData.title} <span style="color:#888; font-size:0.7rem;">(匹配度 ${similarity}%)</span></div>`;
             }
         }
         alsoHtml += `</div>`;
@@ -635,6 +646,10 @@
         document.getElementById("resultPanel").classList.remove("hidden");
         
         document.getElementById("restartBtn")?.addEventListener("click", resetTest);
+    }
+    
+    function getTypeKey(letters) {
+        return letters.join("");
     }
     
     function resetTest() {
