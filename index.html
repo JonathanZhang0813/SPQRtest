@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SPQR · 五维人格测试</title>
+    <title>SPQR · 五维人格测试 (40题完整版)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -32,10 +32,13 @@
             background: rgba(0,0,0,0.3);
             border-radius: 30px;
             backdrop-filter: blur(10px);
+            position: sticky;
+            top: 10px;
+            z-index: 10;
         }
 
         h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             margin-bottom: 8px;
             letter-spacing: 2px;
         }
@@ -49,14 +52,41 @@
 
         .sub {
             color: #aaa;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .full-name {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #666;
-            margin-top: 6px;
+            margin-top: 4px;
             font-family: monospace;
+        }
+
+        /* 进度条 */
+        .progress-container {
+            margin-top: 12px;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            height: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 20px;
+        }
+
+        .progress-text {
+            font-size: 0.7rem;
+            margin-top: 6px;
+            color: #888;
+            text-align: right;
         }
 
         /* 卡片 */
@@ -67,21 +97,32 @@
             margin-bottom: 20px;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.2s;
         }
 
         .question {
-            margin-bottom: 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 28px;
             padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
         }
 
         .question:last-child {
             border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .q-num {
+            display: inline-block;
+            background: rgba(245,175,25,0.2);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+            color: #f5af19;
         }
 
         .q-text {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 500;
             margin-bottom: 14px;
             line-height: 1.4;
@@ -89,7 +130,7 @@
 
         .options {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
@@ -98,12 +139,12 @@
             min-width: 120px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 60px;
             text-align: center;
             cursor: pointer;
             transition: 0.2s;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: #ddd;
         }
 
@@ -165,7 +206,7 @@
             background: #f12711;
             padding: 8px 24px;
             border-radius: 60px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             margin: 20px 0;
             letter-spacing: 2px;
@@ -183,7 +224,7 @@
         }
 
         .title-name {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 800;
             margin: 15px 0;
             text-shadow: 0 0 10px rgba(245,175,25,0.3);
@@ -194,7 +235,7 @@
             padding: 20px;
             border-radius: 24px;
             margin: 20px 0;
-            font-size: 1.05rem;
+            font-size: 1rem;
             line-height: 1.5;
             text-align: left;
         }
@@ -205,7 +246,7 @@
             padding: 18px;
             border-radius: 20px;
             margin-top: 15px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #ccc;
             border-left: 3px solid #f5af19;
         }
@@ -213,7 +254,7 @@
         footer {
             text-align: center;
             margin-top: 30px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #555;
         }
 
@@ -230,10 +271,13 @@
                 width: 100%;
             }
             .title-name {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
             h1 {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
+            }
+            .card {
+                padding: 18px;
             }
         }
     </style>
@@ -241,59 +285,83 @@
 <body>
 
 <div class="container" id="app">
-    <!-- 标题区 -->
     <div class="header">
         <h1><span>SPQR</span></h1>
         <div class="sub">恶搞 · 但认真 · 有心理依据</div>
-        <div class="full-name">Self-Perception Quintet Report · 五维自我认知报告</div>
-        <div class="sub" style="font-size:0.7rem; margin-top:8px;">Quiet/Noisy · Stupid/Wise · Random/Orderly · Brave/Afraid · True/Mask</div>
+        <div class="full-name">Self-Perception Quintet Report · 五维自我认知报告 (40题版)</div>
+        <div class="sub" style="font-size:0.65rem; margin-top:6px;">Quiet/Noisy · Stupid/Wise · Random/Orderly · Brave/Afraid · True/Mask</div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="progress-text" id="progressText">0 / 40 题</div>
+        </div>
     </div>
 
-    <!-- 问卷区 -->
-    <div id="quizPanel">
-        <!-- 动态生成题目 -->
-    </div>
-
-    <!-- 结果区 -->
-    <div id="resultPanel" class="card result-card hidden">
-        <!-- 动态填充结果 -->
-    </div>
-
-    <footer>⚡ 每个维度3题 | 选更符合你的那一项 | SPQR © 五维人格模型</footer>
+    <div id="quizPanel"></div>
+    <div id="resultPanel" class="card result-card hidden"></div>
+    <footer>⚡ 每个维度8题，共40题 | 选更符合你的那一项 | SPQR © 五维人格模型</footer>
 </div>
 
 <script>
-    // ======================= 题目定义 =======================
-    // 维度顺序: Q/N, S/W, R/O, B/A, T/M
+    // ======================= 40题完整题库 =======================
+    // 维度: 0=QN, 1=SW, 2=RO, 3=BA, 4=TM
     const questions = [
-        // 维度1: Quiet / Noisy (3题)
-        { text: "在聚会或团队讨论中，你通常是：", options: ["安静听完，最后才发言", "第一个开口，音量不自觉变大"], dimIdx: 0, sideA: "Q", sideB: "N" },
-        { text: "你更喜欢哪种休息方式？", options: ["一个人待着 / 戴上耳机", "约朋友出来 / 热闹氛围"], dimIdx: 0, sideA: "Q", sideB: "N" },
-        { text: "朋友更可能用哪个词形容你？", options: ["安静、内敛", "热闹、有存在感"], dimIdx: 0, sideA: "Q", sideB: "N" },
-        // 维度2: Stupid / Wise (行动vs反思)
-        { text: "遇到一个陌生问题时，你更倾向于：", options: ["先动手试试，错了再改", "先查资料，想清楚再动"], dimIdx: 1, sideA: "S", sideB: "W" },
-        { text: "别人说你“想得太少”的频率：", options: ["经常听到", "很少听到"], dimIdx: 1, sideA: "S", sideB: "W" },
-        { text: "你的决策风格更接近：", options: ["快速试错", "深思熟虑"], dimIdx: 1, sideA: "S", sideB: "W" },
-        // 维度3: Random / Orderly
-        { text: "你的桌面/房间通常是：", options: ["混乱但我知道东西在哪", "整齐，每样东西有固定位置"], dimIdx: 2, sideA: "R", sideB: "O" },
-        { text: "你更喜欢哪种工作方式？", options: ["同时做几件事，看心情切换", "专注做完一件再做下一件"], dimIdx: 2, sideA: "R", sideB: "O" },
-        { text: "对于计划这件事：", options: ["计划赶不上变化，懒得做", "没有计划会让我焦虑"], dimIdx: 2, sideA: "R", sideB: "O" },
-        // 维度4: Brave / Afraid
-        { text: "面对不确定但可能有高回报的机会（如裸辞、大胆表白）：", options: ["会试一试", "会退缩 / 反复计算风险"], dimIdx: 3, sideA: "B", sideB: "A" },
-        { text: "当和别人意见冲突时：", options: ["敢于直接表达", "倾向于回避或附和"], dimIdx: 3, sideA: "B", sideB: "A" },
-        { text: "你更认同哪句话？", options: ["后悔做过什么，比后悔没做要好", "安全第一"], dimIdx: 3, sideA: "B", sideB: "A" },
-        // 维度5: True / Mask (自我真实 vs 面具)
-        { text: "你在社交媒体上的样子和真实的你：", options: ["差不多，懒得演", "差别很大，那是理想版本"], dimIdx: 4, sideA: "T", sideB: "M" },
-        { text: "在不同人群面前（家人/同事/网友），你的表现：", options: ["基本一致", "像变了一个人，有时切换很累"], dimIdx: 4, sideA: "T", sideB: "M" },
-        { text: "面对自己“阴暗面”（嫉妒、懒惰、自私）：", options: ["承认并接受", "不愿面对或习惯性掩饰"], dimIdx: 4, sideA: "T", sideB: "M" }
+        // 维度0: Quiet / Noisy (8题)
+        { text: "在聚会或团队讨论中，你通常是：", opts: ["安静听完，最后才发言", "第一个开口，音量不自觉变大"], dim: 0, aSide: "Q", bSide: "N" },
+        { text: "你更喜欢哪种休息方式？", opts: ["一个人待着 / 戴上耳机", "约朋友出来 / 热闹氛围"], dim: 0, aSide: "Q", bSide: "N" },
+        { text: "朋友更可能用哪个词形容你？", opts: ["安静、内敛", "热闹、有存在感"], dim: 0, aSide: "Q", bSide: "N" },
+        { text: "连续三天没有社交，你的感受是：", opts: ["舒服，还能继续", "憋得慌，要找人说话"], dim: 0, aSide: "Q", bSide: "N" },
+        { text: "你发朋友圈/动态的频率：", opts: ["几乎不发", "一周好几次"], dim: 0, aSide: "Q", bSide: "N" },
+        { text: "在电梯里遇到不太熟的邻居，你会：", opts: ["点头微笑或看手机", "主动找话题聊天"], dim: 0, aSide: "Q", bSide: "N" },
+        { text: "你的微信/通讯录里，常联系的人大概：", opts: ["5个以内", "10个以上"], dim: 0, aSide: "Q", bSide: "N" },
+        { text: "你更享受哪种环境？", opts: ["安静、人少", "热闹、有烟火气"], dim: 0, aSide: "Q", bSide: "N" },
+
+        // 维度1: Stupid / Wise (8题)
+        { text: "遇到一个陌生问题时，你更倾向于：", opts: ["先动手试试，错了再改", "先查资料，想清楚再动"], dim: 1, aSide: "S", bSide: "W" },
+        { text: "别人说你“想得太少”的频率：", opts: ["经常听到", "很少听到"], dim: 1, aSide: "S", bSide: "W" },
+        { text: "你的决策风格更接近：", opts: ["快速试错", "深思熟虑"], dim: 1, aSide: "S", bSide: "W" },
+        { text: "买一个不太便宜的东西之前，你会：", opts: ["看眼缘，喜欢就买", "对比测评、看参数、等降价"], dim: 1, aSide: "S", bSide: "W" },
+        { text: "你更怕哪种情况？", opts: ["想太多错过机会", "没想清楚就做然后后悔"], dim: 1, aSide: "S", bSide: "W" },
+        { text: "别人说你“想太多”的时候：", opts: ["很少听到", "经常听到"], dim: 1, aSide: "S", bSide: "W" },
+        { text: "你的人生哲学更接近：", opts: ["不完美地行动 > 完美的计划", "谋定而后动"], dim: 1, aSide: "S", bSide: "W" },
+        { text: "面对一个复杂问题，你的第一反应是：", opts: ["先试着做点什么", "先拆解分析"], dim: 1, aSide: "S", bSide: "W" },
+
+        // 维度2: Random / Orderly (8题)
+        { text: "你的桌面/房间通常是：", opts: ["混乱但我知道东西在哪", "整齐，每样东西有固定位置"], dim: 2, aSide: "R", bSide: "O" },
+        { text: "你更喜欢哪种工作方式？", opts: ["同时做几件事，看心情切换", "专注做完一件再做下一件"], dim: 2, aSide: "R", bSide: "O" },
+        { text: "对于计划这件事：", opts: ["计划赶不上变化，懒得做", "没有计划会让我焦虑"], dim: 2, aSide: "R", bSide: "O" },
+        { text: "你的手机相册/文件管理：", opts: ["几千张混在一起", "定期整理、分类归档"], dim: 2, aSide: "R", bSide: "O" },
+        { text: "出门旅行前：", opts: ["大概有个方向就行", "做详细的行程表"], dim: 2, aSide: "R", bSide: "O" },
+        { text: "你更接近哪种人？", opts: ["随性、灵活", "有条理、可预测"], dim: 2, aSide: "R", bSide: "O" },
+        { text: "你的时间管理风格：", opts: ["看心情，弹性很大", "有固定的作息和节奏"], dim: 2, aSide: "R", bSide: "O" },
+        { text: "你的备忘录/待办清单：", opts: ["在脑子里，不写下来", "写得清清楚楚，做完一项划一项"], dim: 2, aSide: "R", bSide: "O" },
+
+        // 维度3: Brave / Afraid (8题)
+        { text: "面对不确定但可能有高回报的机会（如裸辞、大胆表白）：", opts: ["会试一试", "反复计算风险，大概率放弃"], dim: 3, aSide: "B", bSide: "A" },
+        { text: "当和别人意见冲突时：", opts: ["敢于直接表达", "倾向于回避或附和"], dim: 3, aSide: "B", bSide: "A" },
+        { text: "你更认同哪句话？", opts: ["后悔做过 > 后悔没做", "安全第一"], dim: 3, aSide: "B", bSide: "A" },
+        { text: "在陌生环境里主动和陌生人说话：", opts: ["很自然", "需要鼓起勇气"], dim: 3, aSide: "B", bSide: "A" },
+        { text: "你人生中做过最“出格”的事：", opts: ["挺多的", "想不起来，或者很小"], dim: 3, aSide: "B", bSide: "A" },
+        { text: "面对批评时，你的第一反应：", opts: ["听一听，不一定改", "有点难受，想解释或逃避"], dim: 3, aSide: "B", bSide: "A" },
+        { text: "你更接近哪种人？", opts: ["敢闯敢试", "求稳怕变"], dim: 3, aSide: "B", bSide: "A" },
+        { text: "当你发现自己可能错了：", opts: ["很快承认并调整", "会犹豫，怕丢面子"], dim: 3, aSide: "B", bSide: "A" },
+
+        // 维度4: True / Mask (8题)
+        { text: "你在社交媒体上的样子和真实的你：", opts: ["差不多，懒得演", "差别很大，那是理想版本"], dim: 4, aSide: "T", bSide: "M" },
+        { text: "在不同人群面前（家人/同事/网友），你的表现：", opts: ["基本一致", "像变了一个人，有时切换很累"], dim: 4, aSide: "T", bSide: "M" },
+        { text: "面对自己的“阴暗面”（嫉妒、懒惰、自私）：", opts: ["承认并接受", "不愿面对或习惯性掩饰"], dim: 4, aSide: "T", bSide: "M" },
+        { text: "有人夸你“情商高”时，你内心：", opts: ["谢谢，我就是人好", "那是因为我藏得好"], dim: 4, aSide: "T", bSide: "M" },
+        { text: "你更认同哪句话？", opts: ["我知道自己虚伪，只是懒得改", "我以为我很真诚，后来才发现不是"], dim: 4, aSide: "T", bSide: "M" },
+        { text: "深夜独处时，你的自我评价和白天相比：", opts: ["差不多，没落差", "判若两人，觉得自己是笑话"], dim: 4, aSide: "T", bSide: "M" },
+        { text: "你更接近哪种状态？", opts: ["表里如一，不装", "看人下菜碟，切换自如"], dim: 4, aSide: "T", bSide: "M" },
+        { text: "你的“人设”和真实的你：", opts: ["基本重合", "像两份工作，很累"], dim: 4, aSide: "T", bSide: "M" }
     ];
 
-    // 存储每个维度的得分 (B侧计数)
-    let scores = [0, 0, 0, 0, 0];
-    // 存储每道题的选中状态 (0=未选, 1=A, 2=B)
+    // 存储答案 (0=未选, 1=A, 2=B)
     let answers = new Array(questions.length).fill(0);
+    // 存储每个维度的B侧得分
+    let scores = [0, 0, 0, 0, 0];
 
-    // ======================= 32种类型的数据库 =======================
+    // ======================= 32种类型数据库 =======================
     const typeData = {
         "QSRBT": { title: "地雷", comment: "安静、冲动、混乱、勇敢、真实。看着没事，踩到就炸，炸完自己先懵。", analysis: "高行为激活但低外向性。内心冲动强烈，但不善于用语言表达。情绪积累后爆发力惊人，属于‘沉默的火山型’。在安全环境中创造力极强。" },
         "QSRBM": { title: "戏精", comment: "安静、冲动、混乱、勇敢、戴面具。外表人畜无害，内心全是剧本。", analysis: "低自我监控+高冲动，但善于用安静的外表演示无辜。实际上行动力很强，只是不让别人看透。适合需要‘扮猪吃老虎’的场景。" },
@@ -329,44 +397,63 @@
         "NWOAM": { title: "空壳", comment: "吵闹、聪明、有序、怂、面具。看起来什么都有，内里什么都没有。", analysis: "全维度防御。面具厚到忘了自己是谁，外表光鲜，内心空洞。最容易出现‘空心症’的类型。" }
     };
 
-    function getTypeKey(letters) {
-        return letters.join("");
+    function updateProgress() {
+        const answered = answers.filter(a => a !== 0).length;
+        const percent = (answered / questions.length) * 100;
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressText').innerText = `${answered} / ${questions.length} 题`;
+    }
+
+    function updateScoresFromAnswers() {
+        scores = [0, 0, 0, 0, 0];
+        for (let i = 0; i < questions.length; i++) {
+            if (answers[i] === 2) {
+                scores[questions[i].dim]++;
+            }
+        }
     }
 
     function computeLetters() {
         return [
-            scores[0] >= 2 ? "N" : "Q",
-            scores[1] >= 2 ? "W" : "S",
-            scores[2] >= 2 ? "O" : "R",
-            scores[3] >= 2 ? "A" : "B",
-            scores[4] >= 2 ? "M" : "T"
+            scores[0] >= 4 ? "N" : "Q",
+            scores[1] >= 4 ? "W" : "S",
+            scores[2] >= 4 ? "O" : "R",
+            scores[3] >= 4 ? "A" : "B",
+            scores[4] >= 4 ? "M" : "T"
         ];
+    }
+
+    function getTypeKey(letters) {
+        return letters.join("");
     }
 
     function renderQuestions() {
         const container = document.getElementById("quizPanel");
         if (!container) return;
+        
         let html = `<div class="card">`;
         questions.forEach((q, idx) => {
             const selectedVal = answers[idx];
             html += `
                 <div class="question" data-qidx="${idx}">
-                    <div class="q-text">${idx+1}. ${q.text}</div>
+                    <div class="q-num">${idx+1}</div>
+                    <div class="q-text">${q.text}</div>
                     <div class="options">
-                        <div class="opt-btn ${selectedVal === 1 ? 'selected' : ''}" data-opt="A">🔘 ${q.options[0]}</div>
-                        <div class="opt-btn ${selectedVal === 2 ? 'selected' : ''}" data-opt="B">🔘 ${q.options[1]}</div>
+                        <div class="opt-btn ${selectedVal === 1 ? 'selected' : ''}" data-opt="A">🔘 ${q.opts[0]}</div>
+                        <div class="opt-btn ${selectedVal === 2 ? 'selected' : ''}" data-opt="B">🔘 ${q.opts[1]}</div>
                     </div>
                 </div>
             `;
         });
         html += `
             <div class="btn-group">
-                <button class="btn btn-primary" id="submitBtn">✨ 查看我的SPQR人格 ✨</button>
+                <button class="btn btn-primary" id="submitBtn">🏛️ 查看我的SPQR人格</button>
                 <button class="btn btn-reset" id="resetBtn">🔄 重新测试</button>
             </div>
         </div>`;
         container.innerHTML = html;
 
+        // 绑定事件
         document.querySelectorAll('.question').forEach(qDiv => {
             const qidx = parseInt(qDiv.dataset.qidx);
             const btns = qDiv.querySelectorAll('.opt-btn');
@@ -377,31 +464,23 @@
                     answers[qidx] = newVal;
                     btns.forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
-                    updateScoresFromAnswers();
+                    updateProgress();
                 });
             });
         });
 
         document.getElementById("submitBtn")?.addEventListener("click", showResult);
         document.getElementById("resetBtn")?.addEventListener("click", resetTest);
-    }
-
-    function updateScoresFromAnswers() {
-        scores = [0, 0, 0, 0, 0];
-        for (let i = 0; i < questions.length; i++) {
-            const ans = answers[i];
-            if (ans === 2) {
-                const dim = questions[i].dimIdx;
-                scores[dim]++;
-            }
-        }
+        updateProgress();
     }
 
     function showResult() {
-        if (answers.some(a => a === 0)) {
-            alert("⚠️ 还有题目没选完！每道题都要选一个选项～");
+        const unanswered = answers.filter(a => a === 0).length;
+        if (unanswered > 0) {
+            alert(`⚠️ 还有 ${unanswered} 道题没选完！全部答完才能看到结果～`);
             return;
         }
+        
         updateScoresFromAnswers();
         const letters = computeLetters();
         const typeKey = getTypeKey(letters);
@@ -419,13 +498,8 @@
                 <div class="badge">🏛️ SPQR · 五维代码</div>
                 <div class="type-code">${typeKey}</div>
                 <div class="title-name">✨ ${data.title} ✨</div>
-                <div class="comment">
-                    📢 ${data.comment}
-                </div>
-                <div class="analysis">
-                    🧠 心理分析：<br><br>
-                    ${data.analysis}
-                </div>
+                <div class="comment">📢 ${data.comment}</div>
+                <div class="analysis">🧠 心理分析：<br><br>${data.analysis}</div>
                 <div class="btn-group" style="margin-top: 28px;">
                     <button class="btn btn-reset" id="restartBtn">🔄 重新测试</button>
                 </div>
