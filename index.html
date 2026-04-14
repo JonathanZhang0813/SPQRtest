@@ -24,7 +24,6 @@
             margin: 0 auto;
         }
 
-        /* 头部 */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -62,7 +61,6 @@
             font-family: monospace;
         }
 
-        /* 进度条 */
         .progress-container {
             margin-top: 12px;
         }
@@ -89,7 +87,6 @@
             text-align: right;
         }
 
-        /* 卡片 */
         .card {
             background: rgba(255,255,255,0.08);
             border-radius: 28px;
@@ -159,7 +156,6 @@
             background: rgba(255,255,255,0.15);
         }
 
-        /* 按钮 */
         .btn-group {
             display: flex;
             gap: 16px;
@@ -196,7 +192,6 @@
             border: 1px solid rgba(255,255,255,0.3);
         }
 
-        /* 结果页 */
         .result-card {
             text-align: center;
         }
@@ -251,6 +246,78 @@
             border-left: 3px solid #f5af19;
         }
 
+        /* 百分比仪表盘 */
+        .metrics {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 18px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .metric-item {
+            margin-bottom: 14px;
+        }
+
+        .metric-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 6px;
+            color: #bbb;
+        }
+
+        .metric-label span:first-child {
+            color: #f5af19;
+        }
+
+        .metric-bar-bg {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            background: linear-gradient(90deg, #f5af19, #f12711);
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* 推荐模块 */
+        .also-box {
+            background: rgba(245,175,25,0.1);
+            border: 1px solid rgba(245,175,25,0.3);
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .also-title {
+            font-size: 0.8rem;
+            color: #f5af19;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .also-item {
+            display: inline-block;
+            background: rgba(0,0,0,0.4);
+            padding: 6px 14px;
+            border-radius: 30px;
+            margin: 4px 6px 4px 0;
+            font-size: 0.85rem;
+        }
+
+        .also-item strong {
+            color: #f5af19;
+        }
+
         footer {
             text-align: center;
             margin-top: 30px;
@@ -303,9 +370,7 @@
 
 <script>
     // ======================= 40题完整题库 =======================
-    // 维度: 0=QN, 1=SW, 2=RO, 3=BA, 4=TM
     const questions = [
-        // 维度0: Quiet / Noisy (8题)
         { text: "在聚会或团队讨论中，你通常是：", opts: ["安静听完，最后才发言", "第一个开口，音量不自觉变大"], dim: 0, aSide: "Q", bSide: "N" },
         { text: "你更喜欢哪种休息方式？", opts: ["一个人待着 / 戴上耳机", "约朋友出来 / 热闹氛围"], dim: 0, aSide: "Q", bSide: "N" },
         { text: "朋友更可能用哪个词形容你？", opts: ["安静、内敛", "热闹、有存在感"], dim: 0, aSide: "Q", bSide: "N" },
@@ -314,8 +379,6 @@
         { text: "在电梯里遇到不太熟的邻居，你会：", opts: ["点头微笑或看手机", "主动找话题聊天"], dim: 0, aSide: "Q", bSide: "N" },
         { text: "你的微信/通讯录里，常联系的人大概：", opts: ["5个以内", "10个以上"], dim: 0, aSide: "Q", bSide: "N" },
         { text: "你更享受哪种环境？", opts: ["安静、人少", "热闹、有烟火气"], dim: 0, aSide: "Q", bSide: "N" },
-
-        // 维度1: Stupid / Wise (8题)
         { text: "遇到一个陌生问题时，你更倾向于：", opts: ["先动手试试，错了再改", "先查资料，想清楚再动"], dim: 1, aSide: "S", bSide: "W" },
         { text: "别人说你“想得太少”的频率：", opts: ["经常听到", "很少听到"], dim: 1, aSide: "S", bSide: "W" },
         { text: "你的决策风格更接近：", opts: ["快速试错", "深思熟虑"], dim: 1, aSide: "S", bSide: "W" },
@@ -324,8 +387,6 @@
         { text: "别人说你“想太多”的时候：", opts: ["很少听到", "经常听到"], dim: 1, aSide: "S", bSide: "W" },
         { text: "你的人生哲学更接近：", opts: ["不完美地行动 > 完美的计划", "谋定而后动"], dim: 1, aSide: "S", bSide: "W" },
         { text: "面对一个复杂问题，你的第一反应是：", opts: ["先试着做点什么", "先拆解分析"], dim: 1, aSide: "S", bSide: "W" },
-
-        // 维度2: Random / Orderly (8题)
         { text: "你的桌面/房间通常是：", opts: ["混乱但我知道东西在哪", "整齐，每样东西有固定位置"], dim: 2, aSide: "R", bSide: "O" },
         { text: "你更喜欢哪种工作方式？", opts: ["同时做几件事，看心情切换", "专注做完一件再做下一件"], dim: 2, aSide: "R", bSide: "O" },
         { text: "对于计划这件事：", opts: ["计划赶不上变化，懒得做", "没有计划会让我焦虑"], dim: 2, aSide: "R", bSide: "O" },
@@ -334,8 +395,6 @@
         { text: "你更接近哪种人？", opts: ["随性、灵活", "有条理、可预测"], dim: 2, aSide: "R", bSide: "O" },
         { text: "你的时间管理风格：", opts: ["看心情，弹性很大", "有固定的作息和节奏"], dim: 2, aSide: "R", bSide: "O" },
         { text: "你的备忘录/待办清单：", opts: ["在脑子里，不写下来", "写得清清楚楚，做完一项划一项"], dim: 2, aSide: "R", bSide: "O" },
-
-        // 维度3: Brave / Afraid (8题)
         { text: "面对不确定但可能有高回报的机会（如裸辞、大胆表白）：", opts: ["会试一试", "反复计算风险，大概率放弃"], dim: 3, aSide: "B", bSide: "A" },
         { text: "当和别人意见冲突时：", opts: ["敢于直接表达", "倾向于回避或附和"], dim: 3, aSide: "B", bSide: "A" },
         { text: "你更认同哪句话？", opts: ["后悔做过 > 后悔没做", "安全第一"], dim: 3, aSide: "B", bSide: "A" },
@@ -344,8 +403,6 @@
         { text: "面对批评时，你的第一反应：", opts: ["听一听，不一定改", "有点难受，想解释或逃避"], dim: 3, aSide: "B", bSide: "A" },
         { text: "你更接近哪种人？", opts: ["敢闯敢试", "求稳怕变"], dim: 3, aSide: "B", bSide: "A" },
         { text: "当你发现自己可能错了：", opts: ["很快承认并调整", "会犹豫，怕丢面子"], dim: 3, aSide: "B", bSide: "A" },
-
-        // 维度4: True / Mask (8题)
         { text: "你在社交媒体上的样子和真实的你：", opts: ["差不多，懒得演", "差别很大，那是理想版本"], dim: 4, aSide: "T", bSide: "M" },
         { text: "在不同人群面前（家人/同事/网友），你的表现：", opts: ["基本一致", "像变了一个人，有时切换很累"], dim: 4, aSide: "T", bSide: "M" },
         { text: "面对自己的“阴暗面”（嫉妒、懒惰、自私）：", opts: ["承认并接受", "不愿面对或习惯性掩饰"], dim: 4, aSide: "T", bSide: "M" },
@@ -356,9 +413,7 @@
         { text: "你的“人设”和真实的你：", opts: ["基本重合", "像两份工作，很累"], dim: 4, aSide: "T", bSide: "M" }
     ];
 
-    // 存储答案 (0=未选, 1=A, 2=B)
     let answers = new Array(questions.length).fill(0);
-    // 存储每个维度的B侧得分
     let scores = [0, 0, 0, 0, 0];
 
     // ======================= 32种类型数据库 =======================
@@ -397,6 +452,15 @@
         "NWOAM": { title: "空壳", comment: "吵闹、聪明、有序、怂、面具。看起来什么都有，内里什么都没有。", analysis: "全维度防御。面具厚到忘了自己是谁，外表光鲜，内心空洞。最容易出现‘空心症’的类型。" }
     };
 
+    // 维度名称和左右标签
+    const dimLabels = [
+        { name: "Quiet / Noisy", left: "🔇 Quiet", right: "📢 Noisy" },
+        { name: "Stupid / Wise", left: "🤪 Stupid", right: "🧠 Wise" },
+        { name: "Random / Orderly", left: "🌀 Random", right: "📐 Orderly" },
+        { name: "Brave / Afraid", left: "⚡ Brave", right: "😨 Afraid" },
+        { name: "True / Mask", left: "💎 True", right: "🎭 Mask" }
+    ];
+
     function updateProgress() {
         const answered = answers.filter(a => a !== 0).length;
         const percent = (answered / questions.length) * 100;
@@ -421,6 +485,34 @@
             scores[3] >= 4 ? "A" : "B",
             scores[4] >= 4 ? "M" : "T"
         ];
+    }
+
+    // 计算每个维度的百分比 (0-100, 0=全左, 100=全右)
+    function computePercentages() {
+        return scores.map(score => (score / 8) * 100);
+    }
+
+    // 根据得分找最接近的其他类型（汉明距离 + 得分差）
+    function findSimilarTypes(letters, percentages) {
+        const allTypes = Object.keys(typeData);
+        const currentKey = letters.join("");
+        
+        // 计算每个候选的相似度得分
+        const scored = allTypes.filter(t => t !== currentKey).map(candidate => {
+            const candidateLetters = candidate.split("");
+            // 汉明距离（不同字母的数量）
+            let hamming = 0;
+            for (let i = 0; i < 5; i++) {
+                if (candidateLetters[i] !== letters[i]) hamming++;
+            }
+            // 得分越高越接近（汉明距离越小越好）
+            const similarity = (5 - hamming) / 5;
+            return { type: candidate, similarity, hamming };
+        });
+        
+        // 按汉明距离排序，取前3
+        scored.sort((a, b) => a.hamming - b.hamming);
+        return scored.slice(0, 3).map(s => s.type);
     }
 
     function getTypeKey(letters) {
@@ -453,7 +545,6 @@
         </div>`;
         container.innerHTML = html;
 
-        // 绑定事件
         document.querySelectorAll('.question').forEach(qDiv => {
             const qidx = parseInt(qDiv.dataset.qidx);
             const btns = qDiv.querySelectorAll('.opt-btn');
@@ -483,13 +574,45 @@
         
         updateScoresFromAnswers();
         const letters = computeLetters();
+        const percentages = computePercentages();
         const typeKey = getTypeKey(letters);
         const data = typeData[typeKey];
         
+        // 构建百分比仪表盘HTML
+        let metricsHtml = `<div class="metrics"><div style="font-size:0.8rem; margin-bottom:12px; color:#f5af19;">📊 维度偏向百分比</div>`;
+        for (let i = 0; i < 5; i++) {
+            const pct = percentages[i];
+            metricsHtml += `
+                <div class="metric-item">
+                    <div class="metric-label">
+                        <span>${dimLabels[i].left}</span>
+                        <span>${dimLabels[i].right}</span>
+                    </div>
+                    <div class="metric-bar-bg">
+                        <div class="metric-bar-fill" style="width: ${pct}%;"></div>
+                    </div>
+                    <div style="font-size:0.65rem; text-align:center; margin-top:4px; color:#888;">${pct.toFixed(1)}% → ${dimLabels[i].right}</div>
+                </div>
+            `;
+        }
+        metricsHtml += `</div>`;
+        
+        // 查找相似类型
+        const similarTypes = findSimilarTypes(letters, percentages);
+        let alsoHtml = `<div class="also-box"><div class="also-title">🔍 你也有可能是：</div>`;
+        for (const t of similarTypes) {
+            const similarData = typeData[t];
+            if (similarData) {
+                alsoHtml += `<div class="also-item"><strong>${t}</strong> · ${similarData.title}</div>`;
+            }
+        }
+        alsoHtml += `</div>`;
+        
         if (!data) {
-            document.getElementById("resultPanel").innerHTML = `<div style="text-align:center"><h3>🤔 SPQR稀有类型</h3><p>${typeKey}</p><p>系统正在加载...</p></div>`;
+            document.getElementById("resultPanel").innerHTML = `<div style="text-align:center"><h3>🤔 SPQR稀有类型</h3><p>${typeKey}</p>${metricsHtml}${alsoHtml}<div class="btn-group"><button class="btn btn-reset" id="restartBtn">🔄 重新测试</button></div></div>`;
             document.getElementById("quizPanel").classList.add("hidden");
             document.getElementById("resultPanel").classList.remove("hidden");
+            document.getElementById("restartBtn")?.addEventListener("click", resetTest);
             return;
         }
         
@@ -499,7 +622,9 @@
                 <div class="type-code">${typeKey}</div>
                 <div class="title-name">✨ ${data.title} ✨</div>
                 <div class="comment">📢 ${data.comment}</div>
+                ${metricsHtml}
                 <div class="analysis">🧠 心理分析：<br><br>${data.analysis}</div>
+                ${alsoHtml}
                 <div class="btn-group" style="margin-top: 28px;">
                     <button class="btn btn-reset" id="restartBtn">🔄 重新测试</button>
                 </div>
